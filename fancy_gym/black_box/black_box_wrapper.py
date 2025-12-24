@@ -1,4 +1,4 @@
-from typing import Tuple, Optional, Callable, Dict, Any
+from typing import Tuple, Optional, Callable, Dict, Any, Union
 
 import gymnasium as gym
 import numpy as np
@@ -9,13 +9,13 @@ from mp_pytorch.mp.mp_interfaces import MPInterface
 from fancy_gym.black_box.controller.base_controller import BaseController
 from fancy_gym.black_box.raw_interface_wrapper import RawInterfaceWrapper
 from fancy_gym.utils.utils import get_numpy
-
+from bspline_mp.mp import BsplineMPInterface
 
 class BlackBoxWrapper(gym.ObservationWrapper):
 
     def __init__(self,
                  env: RawInterfaceWrapper,
-                 trajectory_generator: MPInterface,
+                 trajectory_generator: Union[MPInterface, BsplineMPInterface],
                  tracking_controller: BaseController,
                  duration: float,
                  verbose: int = 1,
@@ -59,10 +59,11 @@ class BlackBoxWrapper(gym.ObservationWrapper):
         # check
         self.tau_bound = [-np.inf, np.inf]
         self.delay_bound = [-np.inf, np.inf]
-        if self.traj_gen.phase_gn.learn_tau:
-            self.tau_bound = self.traj_gen.phase_gn.tau_bound
-        if self.traj_gen.phase_gn.learn_delay:
-            self.delay_bound = self.traj_gen.phase_gn.delay_bound
+        if isinstance(self.traj_gen, MPInterface):
+            if self.traj_gen.phase_gn.learn_tau:
+                self.tau_bound = self.traj_gen.phase_gn.tau_bound
+            if self.traj_gen.phase_gn.learn_delay:
+                self.delay_bound = self.traj_gen.phase_gn.delay_bound
 
         # reward computation
         self.reward_aggregation = reward_aggregation
