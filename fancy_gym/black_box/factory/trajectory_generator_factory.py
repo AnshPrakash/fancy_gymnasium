@@ -1,5 +1,6 @@
 from mp_pytorch.basis_gn import BasisGenerator
 from mp_pytorch.mp import ProDMP, DMP, ProMP
+from bspline_mp.mp import BsplineMPGen
 
 ALL_TYPES = ["promp", "dmp", "idmp"]
 
@@ -16,6 +17,8 @@ def get_trajectory_generator(
         from mp_pytorch.basis_gn import ProDMPBasisGenerator
         assert isinstance(basis_generator, ProDMPBasisGenerator)
         return ProDMP(basis_generator, action_dim, **kwargs)
+    elif trajectory_generator_type == 'bmp':
+        return BsplineMPGen(  env_dof=action_dim, **kwargs)
     else:
         raise ValueError(f"Specified movement primitive type {trajectory_generator_type} not supported, "
                          f"please choose one of {ALL_TYPES}.")
