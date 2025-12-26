@@ -2,7 +2,7 @@ from mp_pytorch.basis_gn import BasisGenerator
 from mp_pytorch.mp import ProDMP, DMP, ProMP
 from bspline_mp.mp import BsplineMPGen
 
-ALL_TYPES = ["promp", "dmp", "idmp"]
+ALL_TYPES = ["promp", "dmp", "idmp", "bmp"]
 
 
 def get_trajectory_generator(
