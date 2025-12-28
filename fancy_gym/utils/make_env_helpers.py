@@ -107,6 +107,7 @@ def make_bb(
         env = FlattenObservation(env)
 
     traj_gen_kwargs['action_dim'] = traj_gen_kwargs.get('action_dim', np.prod(env.action_space.shape).item())
+    trajectory_generator_type = traj_gen_kwargs.get('trajectory_generator_type', 'dmp')
 
     if black_box_kwargs.get('duration') is None:
         black_box_kwargs['duration'] = get_env_duration(env)
@@ -126,10 +127,18 @@ def make_bb(
     if phase_kwargs.get('learn_delay') and phase_kwargs.get('delay_bound') is None:
         phase_kwargs["delay_bound"] = [0, black_box_kwargs['duration'] - env.dt * 2]
 
-    phase_gen = get_phase_generator(**phase_kwargs)
-    basis_gen = get_basis_generator(phase_generator=phase_gen, **basis_kwargs)
+    phase_gen = get_phase_generator(**phase_kwargs) # BsplineMP ignores this for now
+    basis_gen = get_basis_generator(phase_generator=phase_gen, **basis_kwargs) # BsplineMP ignores this for now
     controller = get_controller(**controller_kwargs)
-    traj_gen = get_trajectory_generator(basis_generator=basis_gen, **traj_gen_kwargs)
+    action_type = 'action_dim'
+    if trajectory_generator_type == 'bmp':
+        # env_dim and action_dim are same in case of Joint space control
+        action_type = 'env_dim'
+    traj_gen = get_trajectory_generator(  trajectory_generator_type=trajectory_generator_type,
+                                          action_dim =traj_gen_kwargs[action_type],
+                                          basis_generator=basis_gen
+                                        )
+    # traj_gen = get_trajectory_generator(trajectory_generator_type=, action_dim=, basis_generator=basis_gen, **traj_gen_kwargs)
 
     bb_env = BlackBoxWrapper(env, trajectory_generator=traj_gen, tracking_controller=controller,
                              **black_box_kwargs)

@@ -18,7 +18,7 @@ def get_trajectory_generator(
         assert isinstance(basis_generator, ProDMPBasisGenerator)
         return ProDMP(basis_generator, action_dim, **kwargs)
     elif trajectory_generator_type == 'bmp':
-        return BsplineMPGen(  env_dof=action_dim, **kwargs)
+        return BsplineMPGen(  env_dim=action_dim, **kwargs)
     else:
         raise ValueError(f"Specified movement primitive type {trajectory_generator_type} not supported, "
                          f"please choose one of {ALL_TYPES}.")
