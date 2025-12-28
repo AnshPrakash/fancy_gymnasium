@@ -130,10 +130,7 @@ def make_bb(
     phase_gen = get_phase_generator(**phase_kwargs) # BsplineMP ignores this for now
     basis_gen = get_basis_generator(phase_generator=phase_gen, **basis_kwargs) # BsplineMP ignores this for now
     controller = get_controller(**controller_kwargs)
-    action_type = 'action_dim'
-    if trajectory_generator_type == 'bmp':
-        # env_dim and action_dim are same in case of Joint space control
-        action_type = 'env_dim'
+    action_type = 'action_dim' # for joint space control both env_dim, and action_dim are same
     traj_gen = get_trajectory_generator(  trajectory_generator_type=trajectory_generator_type,
                                           action_dim =traj_gen_kwargs[action_type],
                                           basis_generator=basis_gen
