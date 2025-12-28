@@ -17,7 +17,8 @@ class MPWrapper(RawInterfaceWrapper):
         'ProDMP': {},
         'ProDMP_TCE' :{
             'make_tce': True
-        }
+        },
+        'BsplineMP' : {}
     }
 
     @property

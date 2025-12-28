@@ -135,6 +135,26 @@ _BB_DEFAULTS = {
             'd_gains': 0.1,
         },
         'make_tce': True
+    },
+    'BsplineMP' : {
+        'wrappers': [],
+        'trajectory_generator_kwargs': {
+            'trajectory_generator_type': 'bmp'
+        },
+        'phase_generator_kwargs': {
+            'phase_generator_type': 'linear' # Not used: Kept to not face errors
+        },
+        'controller_kwargs': {
+            'controller_type': 'motor',
+            'p_gains': 1.0,
+            'd_gains': 0.1,
+        },
+        'basis_generator_kwargs': { # Not used: Kept to not face errors
+            'basis_generator_type': 'zero_rbf',
+            'num_basis': 5,
+            'num_basis_zero_start': 1,
+            'basis_bandwidth_factor': 3.0,
+        },
     }
 
 }
