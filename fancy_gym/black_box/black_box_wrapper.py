@@ -104,7 +104,7 @@ class BlackBoxWrapper(gym.ObservationWrapper):
 
         clipped_params = np.clip(
             action, self.traj_gen_action_space.low, self.traj_gen_action_space.high)
-        self.traj_gen.set_params(clipped_params)
+        self.traj_gen.set_params(clipped_params[None, ...])
         init_time = np.array(
             0 if not self.do_replanning else self.current_traj_steps * self.dt)
 
@@ -112,20 +112,19 @@ class BlackBoxWrapper(gym.ObservationWrapper):
         condition_vel = self.condition_vel if self.condition_vel is not None else self.env.get_wrapper_attr('current_vel')
 
         self.traj_gen.set_initial_conditions(
-            init_time, condition_pos, condition_vel)
+            init_time[None, ...], condition_pos[None, ...], condition_vel[None, ...])
         self.traj_gen.set_duration(duration, self.dt)
 
-        position = get_numpy(self.traj_gen.get_traj_pos())
-        velocity = get_numpy(self.traj_gen.get_traj_vel())
-
+        position = get_numpy(self.traj_gen.get_traj_pos().squeeze(0))
+        velocity = get_numpy(self.traj_gen.get_traj_vel().squeeze(0))
         return position, velocity
 
     def _get_traj_gen_action_space(self):
         """This function can be used to set up an individual space for the parameters of the traj_gen."""
         if isinstance(self.traj_gen, BsplineMPInterface):
             action_space = gym.spaces.Box(
-                low=np.repeat(self.env.action_space.low, self.traj_gen.num_control_points),
-                high=np.repeat(self.env.action_space.high, self.traj_gen.num_control_points),
+                low=np.repeat(self.env.action_space.low, self.traj_gen.num_control_points_param),
+                high=np.repeat(self.env.action_space.high, self.traj_gen.num_control_points_param),
                 dtype=self.env.action_space.dtype
             )
             return action_space
