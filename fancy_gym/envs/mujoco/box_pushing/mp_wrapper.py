@@ -32,6 +32,19 @@ class MPWrapper(RawInterfaceWrapper):
                 'd_gains': 0.01 * np.array([10., 10., 10., 10., 6., 5., 3.]),
             },
             'make_tce': True
+        },
+        'BsplineMP' : {
+            'controller_kwargs': {
+                'p_gains': 0.01 * np.array([120., 120., 120., 120., 50., 30., 10.]),
+                'd_gains': 0.01 * np.array([10., 10., 10., 10., 6., 5., 3.]),
+            },    
+        },
+        'BsplineMP_TCE' : {
+            'controller_kwargs': {
+                'p_gains': 0.01 * np.array([120., 120., 120., 120., 50., 30., 10.]),
+                'd_gains': 0.01 * np.array([10., 10., 10., 10., 6., 5., 3.]),
+            },
+            'make_tce': True
         }
     }
 
