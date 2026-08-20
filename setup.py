@@ -60,7 +60,7 @@ setup(
     extras_require=extras,
     install_requires=[
         'toml',
-        'mujoco==2.3.3',
+        'mujoco==3.3.0',
         'gymnasium[mujoco]>=0.26.0'
     ],
     packages=[package for package in find_packages(

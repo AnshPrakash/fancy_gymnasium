@@ -6,6 +6,7 @@ from .hopper_jump.hopper_jump_on_box import HopperJumpOnBoxEnv
 from .hopper_throw.hopper_throw import HopperThrowEnv
 from .hopper_throw.hopper_throw_in_basket import HopperThrowInBasketEnv
 from .reacher.reacher import ReacherEnv
+from .dnc.dnc import DNCPickPosEnv, DNCThrowPosEnv
 from .walker_2d_jump.walker_2d_jump import Walker2dJumpEnv
 from .box_pushing.box_pushing_env import BoxPushingDense, BoxPushingTemporalSparse, BoxPushingTemporalSpatialSparse
 from .table_tennis.table_tennis_env import TableTennisEnv, TableTennisWind, TableTennisGoalSwitching, TableTennisRandomInit

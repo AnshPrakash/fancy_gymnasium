@@ -22,8 +22,14 @@ class ReacherEnv(MujocoEnv, utils.EzPickle):
         "render_fps": 50,
     }
 
-    def __init__(self, sparse: bool = False, n_links: int = 5, reward_weight: float = 1, ctrl_cost_weight: float = 1.,
-                 **kwargs):
+    def __init__(
+        self,
+        sparse: bool = False,
+        n_links: int = 5,
+        reward_weight: float = 1,
+        ctrl_cost_weight: float = 1.0,
+        **kwargs,
+    ):
         utils.EzPickle.__init__(**locals())
 
         self._steps = 0
@@ -34,25 +40,28 @@ class ReacherEnv(MujocoEnv, utils.EzPickle):
         self._ctrl_cost_weight = ctrl_cost_weight
         self._reward_weight = reward_weight
 
-        file_name = f'reacher_{n_links}links.xml'
+        file_name = f"reacher_{n_links}links.xml"
 
-        # sin, cos, velocity * n_Links + goal position (2) and goal distance (3)
-        shape = (self.n_links * 3 + 5,)
+        # Otto Appendix B adds the raw decision step to sparse observations.
+        shape = (self.n_links * 3 + 5 + int(sparse),)
         observation_space = Box(low=-np.inf, high=np.inf, shape=shape, dtype=np.float64)
 
-        MujocoEnv.__init__(self,
-                           model_path=os.path.join(os.path.dirname(__file__), "assets", file_name),
-                           frame_skip=2,
-                           observation_space=observation_space,
-                           **kwargs
-                           )
+        MujocoEnv.__init__(
+            self,
+            model_path=os.path.join(os.path.dirname(__file__), "assets", file_name),
+            frame_skip=2,
+            observation_space=observation_space,
+            **kwargs,
+        )
 
         self.render_active = False
 
     def step(self, action):
         self._steps += 1
 
-        is_reward = not self.sparse or (self.sparse and self._steps == MAX_EPISODE_STEPS_REACHER)
+        is_reward = not self.sparse or (
+            self.sparse and self._steps == MAX_EPISODE_STEPS_REACHER
+        )
 
         reward_dist = 0.0
         angular_vel = 0.0
@@ -76,10 +85,10 @@ class ReacherEnv(MujocoEnv, utils.EzPickle):
             reward_ctrl=reward_ctrl,
             velocity=angular_vel,
             end_effector=self.get_body_com("fingertip").copy(),
-            goal=self.goal if hasattr(self, "goal") else None
+            goal=self.goal if hasattr(self, "goal") else None,
         )
 
-        if self.render_active and self.render_mode=='human':
+        if self.render_active and self.render_mode == "human":
             self.render()
 
         return ob, reward, terminated, truncated, info
@@ -93,7 +102,11 @@ class ReacherEnv(MujocoEnv, utils.EzPickle):
         return -self._reward_weight * np.linalg.norm(vec)
 
     def velocity_reward(self):
-        return -10 * np.square(self.data.qvel.flat[:self.n_links]).sum() if self.sparse else 0.0
+        return (
+            -10 * np.square(self.data.qvel.flat[: self.n_links]).sum()
+            if self.sparse
+            else 0.0
+        )
 
     def viewer_setup(self):
         assert self.viewer is not None
@@ -105,8 +118,9 @@ class ReacherEnv(MujocoEnv, utils.EzPickle):
             self.init_qpos.copy()
         )
         while True:
-            # full space
-            self.goal = self.np_random.uniform(low=-self.n_links / 10, high=self.n_links / 10, size=2)
+            self.goal = self.np_random.uniform(
+                low=[-self.n_links / 10, 0.0], high=self.n_links / 10, size=2
+            )
             # I Quadrant
             # self.goal = self.np_random.uniform(low=0, high=self.n_links / 10, size=2)
             # II Quadrant
@@ -130,12 +144,15 @@ class ReacherEnv(MujocoEnv, utils.EzPickle):
         return self._get_obs()
 
     def _get_obs(self):
-        theta = self.data.qpos.flat[:self.n_links]
+        theta = self.data.qpos.flat[: self.n_links]
         target = self.get_body_com("target")
-        return np.concatenate([
-            np.cos(theta),
-            np.sin(theta),
-            target[:2],  # x-y of goal position
-            self.data.qvel.flat[:self.n_links],  # angular velocity
-            self.get_body_com("fingertip") - target,  # goal distance
-        ])
+        return np.concatenate(
+            [
+                np.cos(theta),
+                np.sin(theta),
+                target[:2],  # x-y of goal position
+                self.data.qvel.flat[: self.n_links],  # angular velocity
+                self.get_body_com("fingertip") - target,  # goal distance
+                [self._steps] if self.sparse else [],
+            ]
+        )

@@ -12,6 +12,7 @@ from .classic_control.hole_reacher import MPWrapper as MPWrapper_HoleReacher
 from .classic_control.viapoint_reacher.viapoint_reacher import ViaPointReacherEnv
 from .classic_control.viapoint_reacher import MPWrapper as MPWrapper_ViaPointReacher
 from .mujoco.reacher.reacher import ReacherEnv, MAX_EPISODE_STEPS_REACHER
+from .mujoco.dnc.dnc import DNCPickPosEnv, DNCThrowPosEnv
 from .mujoco.reacher.mp_wrapper import MPWrapper as MPWrapper_Reacher
 from .mujoco.ant_jump.ant_jump import MAX_EPISODE_STEPS_ANTJUMP
 from .mujoco.beerpong.beerpong import MAX_EPISODE_STEPS_BEERPONG, FIXED_RELEASE_STEP
@@ -88,6 +89,21 @@ register(
 )
 
 # Mujoco
+
+# Neural Dynamic Policies uses raw step environments; do not register a
+# trajectory-execution wrapper because DIMEX owns trajectory execution.
+register(
+    id="dnc/PickPos-v0",
+    entry_point=DNCPickPosEnv,
+    max_episode_steps=50,
+    add_mp_types=[],
+)
+register(
+    id="dnc/ThrowPos-v0",
+    entry_point=DNCThrowPosEnv,
+    max_episode_steps=50,
+    add_mp_types=[],
+)
 
 # Mujoco Reacher
 for dims in [5, 7]:

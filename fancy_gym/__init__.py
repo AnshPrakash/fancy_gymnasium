@@ -1,16 +1,11 @@
-from fancy_gym import dmc, meta, open_ai
-from fancy_gym import envs as fancy
-from fancy_gym.utils.make_env_helpers import make_bb
-from .envs.registry import register, upgrade
-from .envs.registry import ALL_MOVEMENT_PRIMITIVE_ENVIRONMENTS, MOVEMENT_PRIMITIVE_ENVIRONMENTS_FOR_NS
+"""DIMEX's raw Fancy Gym task registrations.
 
-ALL_DMC_MOVEMENT_PRIMITIVE_ENVIRONMENTS = MOVEMENT_PRIMITIVE_ENVIRONMENTS_FOR_NS['dm_control']
-ALL_FANCY_MOVEMENT_PRIMITIVE_ENVIRONMENTS = MOVEMENT_PRIMITIVE_ENVIRONMENTS_FOR_NS['fancy']
-if 'metaworld' in MOVEMENT_PRIMITIVE_ENVIRONMENTS_FOR_NS:
-    ALL_METAWORLD_MOVEMENT_PRIMITIVE_ENVIRONMENTS = MOVEMENT_PRIMITIVE_ENVIRONMENTS_FOR_NS['metaworld']
-else:
-    ALL_METAWORLD_MOVEMENT_PRIMITIVE_ENVIRONMENTS = 'Metaworld is not installed.'
-ALL_GYM_MOVEMENT_PRIMITIVE_ENVIRONMENTS = MOVEMENT_PRIMITIVE_ENVIRONMENTS_FOR_NS['gym']
+The optional DMC, MetaWorld, and OpenAI-Gym namespaces target incompatible
+dependency stacks.  DIMEX uses only the custom raw tasks registered in envs.
+"""
+
+from . import envs as fancy
+from .envs.registry import register, upgrade
 
 
 def make(*args, **kwargs):
