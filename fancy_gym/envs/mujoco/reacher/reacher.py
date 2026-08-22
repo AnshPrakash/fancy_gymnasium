@@ -143,6 +143,21 @@ class ReacherEnv(MujocoEnv, utils.EzPickle):
 
         return self._get_obs()
 
+    def symmetric_reset(self, *, seed=None, options=None):
+        """Reset the 5-link task with a seeded goal on its symmetry axis."""
+        _, info = self.reset(seed=seed, options=options)
+        assert self.n_links == 5, "symmetric_reset is only supported for 5-link Reacher"
+        rng = np.random.default_rng(seed) if seed is not None else self.np_random
+        self.goal = np.array(
+            [rng.uniform(-self.n_links / 10, self.n_links / 10), 0.0]
+        )
+        qpos = self.data.qpos.copy()
+        qvel = self.data.qvel.copy()
+        qpos[-2:] = self.goal
+        qvel[-2:] = 0
+        self.set_state(qpos, qvel)
+        return self._get_obs(), info
+
     def _get_obs(self):
         theta = self.data.qpos.flat[: self.n_links]
         target = self.get_body_com("target")
